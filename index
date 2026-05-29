@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaveriePro — Investir dans une laverie automatique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --ink: #1a1a18;
+    --ink2: #4a4a46;
+    --ink3: #8a8a84;
+    --bg: #fafaf7;
+    --bg2: #f2f2ed;
+    --bg3: #e8e8e0;
+    --accent: #2a6e4e;
+    --accent2: #1d9e75;
+    --accent-light: #e1f5ee;
+    --warn: #c84b1a;
+    --warn-light: #faece7;
+    --gold: #b07d2a;
+    --gold-light: #faeeda;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3,h4 { font-family: 'DM Serif Display', serif; font-weight: 400; line-height: 1.2; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,250,247,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--bg3);
+    padding: 0 5%;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .nav-brand { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--accent); text-decoration: none; letter-spacing: -0.02em; }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { font-size: 14px; color: var(--ink2); text-decoration: none; font-weight: 400; transition: color .2s; }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-cta { background: var(--accent); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-size: 14px; font-family: 'DM Sans', sans-serif; cursor: pointer; font-weight: 500; transition: background .2s; text-decoration: none; }
+  .nav-cta:hover { background: var(--accent2); }
+
+  /* HERO */
+  .hero {
+    min-height: 88vh;
+    padding: 0 5%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .hero-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-light); color: var(--accent); font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 20px; margin-bottom: 24px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .hero h1 { font-size: clamp(38px, 5vw, 64px); color: var(--ink); margin-bottom: 20px; letter-spacing: -0.03em; }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .hero-sub { font-size: 17px; color: var(--ink2); margin-bottom: 36px; line-height: 1.7; font-weight: 300; }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary { background: var(--accent); color: white; padding: 14px 28px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; text-decoration: none; display: inline-block; transition: background .2s, transform .15s; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-outline { background: transparent; color: var(--ink); padding: 14px 28px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 400; text-decoration: none; display: inline-block; border: 1px solid var(--bg3); transition: border-color .2s, background .2s; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .btn-outline:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+
+  .hero-card {
+    background: white;
+    border: 1px solid var(--bg3);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.06);
+  }
+  .hero-card-title { font-size: 13px; color: var(--ink3); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+  .hero-stat { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--bg2); }
+  .hero-stat:last-child { border-bottom: none; }
+  .hero-stat-label { font-size: 14px; color: var(--ink2); }
+  .hero-stat-val { font-size: 18px; font-family: 'DM Serif Display', serif; color: var(--ink); }
+  .hero-stat-val.green { color: var(--accent); }
+  .hero-badge { margin-top: 20px; background: var(--accent-light); border-radius: var(--radius-sm); padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+  .hero-badge-text { font-size: 13px; color: var(--accent); font-weight: 500; }
+
+  /* STATS BAND */
+  .stats-band { background: var(--ink); padding: 48px 5%; }
+  .stats-band-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .stat-item { text-align: center; }
+  .stat-num { font-family: 'DM Serif Display', serif; font-size: 40px; color: white; margin-bottom: 6px; }
+  .stat-label { font-size: 13px; color: rgba(255,255,255,0.5); }
+  .stat-unit { font-size: 20px; color: var(--accent2); }
+
+  /* SECTIONS */
+  .section { padding: 80px 5%; max-width: 1200px; margin: 0 auto; }
+  .section-header { text-align: center; margin-bottom: 56px; }
+  .section-tag { display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+  .section-header h2 { font-size: clamp(28px, 4vw, 44px); letter-spacing: -0.02em; margin-bottom: 14px; }
+  .section-header p { font-size: 16px; color: var(--ink2); max-width: 520px; margin: 0 auto; line-height: 1.7; font-weight: 300; }
+
+  /* ATOUTS */
+  .atouts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .atout-card { background: white; border: 1px solid var(--bg3); border-radius: var(--radius); padding: 28px; transition: box-shadow .2s, transform .2s; }
+  .atout-card:hover { box-shadow: 0 8px 40px rgba(0,0,0,0.08); transform: translateY(-2px); }
+  .atout-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 16px; }
+  .icon-green { background: var(--accent-light); }
+  .icon-gold { background: var(--gold-light); }
+  .icon-blue { background: #e6f1fb; }
+  .atout-card h3 { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; margin-bottom: 8px; }
+  .atout-card p { font-size: 14px; color: var(--ink2); line-height: 1.6; font-weight: 300; }
+
+  /* MODELES */
+  .modeles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .modele-card { background: white; border: 1px solid var(--bg3); border-radius: var(--radius); padding: 28px; position: relative; }
+  .modele-card.featured { border: 2px solid var(--accent); }
+  .modele-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; font-size: 11px; font-weight: 500; padding: 4px 14px; border-radius: 20px; white-space: nowrap; letter-spacing: 0.04em; }
+  .modele-emoji { font-size: 28px; margin-bottom: 14px; display: block; }
+  .modele-card h3 { font-size: 18px; margin-bottom: 6px; }
+  .modele-card .tagline { font-size: 13px; color: var(--ink3); margin-bottom: 18px; font-weight: 300; }
+  .modele-pros { list-style: none; margin-bottom: 12px; }
+  .modele-pros li { font-size: 13px; color: var(--ink2); padding: 4px 0; display: flex; gap: 8px; }
+  .modele-pros li::before { content: '✓'; color: var(--accent2); font-weight: 500; flex-shrink: 0; }
+  .modele-cons li::before { content: '×'; color: var(--warn); }
+
+  /* SIMULATEUR */
+  #simulateur { background: var(--bg2); padding: 80px 5%; }
+  .sim-inner { max-width: 1200px; margin: 0 auto; }
+  .sim-grid { display: grid; grid-template-columns: 380px 1fr; gap: 32px; align-items: start; }
+  .sim-panel { background: white; border: 1px solid var(--bg3); border-radius: var(--radius); padding: 28px; }
+  .sim-panel h3 { font-size: 16px; font-weight: 500; margin-bottom: 20px; color: var(--ink); }
+  .sim-row { margin-bottom: 18px; }
+  .sim-row label { font-size: 13px; color: var(--ink2); display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .sim-row label span { font-weight: 500; color: var(--ink); }
+  input[type=range] {
+    width: 100%; height: 4px; -webkit-appearance: none; appearance: none;
+    background: var(--bg3); border-radius: 2px; outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; box-shadow: 0 0 0 3px var(--accent-light);
+  }
+  input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; }
+  .sim-divider { height: 1px; background: var(--bg2); margin: 20px 0; }
+
+  .sim-results { display: flex; flex-direction: column; gap: 16px; }
+  .kpi-grid2 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .kpi2 { background: white; border: 1px solid var(--bg3); border-radius: var(--radius-sm); padding: 16px; text-align: center; }
+  .kpi2-val { font-size: 22px; font-family: 'DM Serif Display', serif; color: var(--ink); margin-bottom: 4px; }
+  .kpi2-val.green { color: var(--accent); }
+  .kpi2-val.red { color: var(--warn); }
+  .kpi2-val.gold { color: var(--gold); }
+  .kpi2-label { font-size: 11px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.05em; }
+  .chart-box { background: white; border: 1px solid var(--bg3); border-radius: var(--radius); padding: 24px; }
+  .chart-box h4 { font-size: 13px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif; }
+  .chart-wrap { position: relative; height: 220px; }
+  .detail-box { background: white; border: 1px solid var(--bg3); border-radius: var(--radius); overflow: hidden; }
+  .detail-box table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .detail-box thead th { background: var(--bg2); padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 500; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.06em; }
+  .detail-box thead th:not(:first-child) { text-align: right; }
+  .detail-box tbody td { padding: 10px 16px; border-top: 1px solid var(--bg2); color: var(--ink); }
+  .detail-box tbody td:not(:first-child) { text-align: right; }
+  .detail-box tbody tr:hover { background: var(--bg2); }
+  .pos { color: var(--accent); }
+  .neg { color: var(--warn); }
+
+  .verdict-box { border-radius: var(--radius); padding: 20px 24px; display: flex; gap: 16px; align-items: center; }
+  .verdict-box.good { background: var(--accent-light); border: 1px solid #9fe1cb; }
+  .verdict-box.warn { background: var(--gold-light); border: 1px solid #fac775; }
+  .verdict-box.bad { background: var(--warn-light); border: 1px solid #f5c4b3; }
+  .verdict-icon { font-size: 32px; flex-shrink: 0; }
+  .verdict-title { font-size: 15px; font-weight: 500; color: var(--ink); }
+  .verdict-sub { font-size: 13px; color: var(--ink2); margin-top: 3px; line-height: 1.5; }
+
+  /* PIÈGES */
+  .pieges-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .piege-card { display: flex; gap: 16px; background: white; border: 1px solid var(--bg3); border-radius: var(--radius); padding: 20px 24px; }
+  .piege-num { width: 36px; height: 36px; border-radius: 8px; background: var(--warn-light); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .piege-card h4 { font-size: 14px; font-weight: 500; margin-bottom: 4px; font-family: 'DM Sans', sans-serif; }
+  .piege-card p { font-size: 13px; color: var(--ink2); line-height: 1.5; font-weight: 300; }
+
+  /* ÉTAPES */
+  .etapes-list { display: flex; flex-direction: column; gap: 0; max-width: 700px; margin: 0 auto; }
+  .etape { display: flex; gap: 24px; position: relative; }
+  .etape-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .etape-num { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-family: 'DM Serif Display', serif; flex-shrink: 0; z-index: 1; }
+  .etape-line { flex: 1; width: 1px; background: var(--bg3); margin: 4px 0; min-height: 32px; }
+  .etape:last-child .etape-line { display: none; }
+  .etape-content { padding-bottom: 32px; }
+  .etape-content h3 { font-size: 17px; margin-bottom: 6px; font-family: 'DM Sans', sans-serif; font-weight: 500; }
+  .etape-content p { font-size: 14px; color: var(--ink2); line-height: 1.6; font-weight: 300; }
+  .etape-tag { display: inline-block; font-size: 11px; background: var(--bg2); color: var(--ink3); padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* CONTACT */
+  #contact { background: var(--ink); padding: 80px 5%; }
+  .contact-inner { max-width: 700px; margin: 0 auto; text-align: center; }
+  .contact-inner h2 { font-size: clamp(28px, 4vw, 44px); color: white; margin-bottom: 16px; letter-spacing: -0.02em; }
+  .contact-inner p { font-size: 16px; color: rgba(255,255,255,0.5); margin-bottom: 36px; font-weight: 300; }
+  .contact-form { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); padding: 32px; text-align: left; }
+  .form-row { margin-bottom: 16px; }
+  .form-row label { display: block; font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+  .form-row input, .form-row textarea, .form-row select {
+    width: 100%; padding: 12px 16px; border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    color: white; font-size: 14px; font-family: 'DM Sans', sans-serif;
+    outline: none; transition: border-color .2s;
+  }
+  .form-row input::placeholder, .form-row textarea::placeholder { color: rgba(255,255,255,0.3); }
+  .form-row input:focus, .form-row textarea:focus { border-color: var(--accent2); }
+  .form-row textarea { resize: vertical; min-height: 100px; }
+  .form-row select option { background: var(--ink); }
+  .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .btn-submit { width: 100%; background: var(--accent2); color: white; border: none; padding: 14px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background .2s; margin-top: 8px; }
+  .btn-submit:hover { background: var(--accent); }
+
+  /* FOOTER */
+  footer { background: var(--ink); border-top: 1px solid rgba(255,255,255,0.08); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; }
+  footer p { font-size: 13px; color: rgba(255,255,255,0.3); }
+  footer a { font-size: 13px; color: rgba(255,255,255,0.3); text-decoration: none; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; min-height: auto; padding: 60px 5%; }
+    .stats-band-inner { grid-template-columns: repeat(2,1fr); }
+    .atouts-grid, .modeles-grid { grid-template-columns: 1fr; }
+    .sim-grid { grid-template-columns: 1fr; }
+    .kpi-grid2 { grid-template-columns: repeat(2,1fr); }
+    .pieges-grid { grid-template-columns: 1fr; }
+    .form-2col { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .fade-up { opacity:0; animation: fadeUp .6s ease forwards; }
+  .delay-1 { animation-delay: .1s; }
+  .delay-2 { animation-delay: .2s; }
+  .delay-3 { animation-delay: .3s; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">LaveriePro</a>
+  <ul class="nav-links">
+    <li><a href="#atouts">Pourquoi investir</a></li>
+    <li><a href="#modeles">Modèles</a></li>
+    <li><a href="#simulateur">Simulateur</a></li>
+    <li><a href="#pieges">Pièges</a></li>
+    <li><a href="#etapes">Étapes</a></li>
+  </ul>
+  <a class="nav-cta" href="#contact">Être accompagné</a>
+</nav>
+
+<!-- HERO -->
+<div style="max-width:1200px;margin:0 auto;">
+<section class="hero">
+  <div>
+    <div class="hero-tag fade-up">💼 Guide investisseur 2025</div>
+    <h1 class="fade-up delay-1">Investir dans une <em>laverie automatique</em></h1>
+    <p class="hero-sub fade-up delay-2">Un actif tangible, cash-flow positif dès la première année, gérable en autonomie. Découvrez les chiffres réels et simulez votre projet.</p>
+    <div class="hero-actions fade-up delay-3">
+      <a href="#simulateur" class="btn-primary">Simuler mon investissement</a>
+      <a href="#atouts" class="btn-outline">Voir les atouts</a>
+    </div>
+  </div>
+  <div class="hero-card fade-up delay-2">
+    <div class="hero-card-title">Profil type d'une laverie</div>
+    <div class="hero-stat"><span class="hero-stat-label">Investissement total</span><span class="hero-stat-val">80 000 – 200 000 €</span></div>
+    <div class="hero-stat"><span class="hero-stat-label">CA annuel moyen</span><span class="hero-stat-val">60 000 – 130 000 €</span></div>
+    <div class="hero-stat"><span class="hero-stat-label">Marge nette</span><span class="hero-stat-val green">20 – 35 %</span></div>
+    <div class="hero-stat"><span class="hero-stat-label">Retour sur investissement</span><span class="hero-stat-val">4 à 8 ans</span></div>
+    <div class="hero-stat"><span class="hero-stat-label">Nb machines (8–20 kg)</span><span class="hero-stat-val">6 à 16 unités</span></div>
+    <div class="hero-badge">
+      <span>✅</span>
+      <span class="hero-badge-text">Paiement comptant · Zéro impayé · Demande incompressible</span>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- STATS BAND -->
+<div class="stats-band">
+  <div class="stats-band-inner">
+    <div class="stat-item"><div class="stat-num">12 000<span class="stat-unit">+</span></div><div class="stat-label">Laveries en France</div></div>
+    <div class="stat-item"><div class="stat-num">7j/7</div><div class="stat-label">Activité continue</div></div>
+    <div class="stat-item"><div class="stat-num">0</div><div class="stat-label">Salarié nécessaire</div></div>
+    <div class="stat-item"><div class="stat-num">25<span class="stat-unit">%</span></div><div class="stat-label">Marge nette médiane</div></div>
+  </div>
+</div>
+
+<!-- ATOUTS -->
+<section class="section" id="atouts">
+  <div class="section-header">
+    <span class="section-tag">Pourquoi ce secteur</span>
+    <h2>Un modèle économique solide</h2>
+    <p>La laverie automatique cumule des avantages rares dans le monde de l'investissement PME.</p>
+  </div>
+  <div class="atouts-grid">
+    <div class="atout-card">
+      <div class="atout-icon icon-green">💶</div>
+      <h3>Cash-flow immédiat</h3>
+      <p>Paiement comptant à chaque cycle. Zéro créance client, zéro risque d'impayé. La trésorerie est disponible en temps réel.</p>
+    </div>
+    <div class="atout-card">
+      <div class="atout-icon icon-gold">👤</div>
+      <h3>Quasi-autonome</h3>
+      <p>Avec la télésurveillance et le télépaiement, aucun salarié n'est nécessaire. Une intervention hebdomadaire suffit pour l'entretien courant.</p>
+    </div>
+    <div class="atout-card">
+      <div class="atout-icon icon-blue">📈</div>
+      <h3>Demande incompressible</h3>
+      <p>La lessive est un besoin primaire. La laverie automatique résiste aux crises économiques et à la concurrence du e-commerce.</p>
+    </div>
+    <div class="atout-card">
+      <div class="atout-icon icon-green">🏠</div>
+      <h3>Actif tangible</h3>
+      <p>Machines, local, clientèle fidèle : un fonds de commerce valorisable et revendable sur la base d'un multiple d'EBE.</p>
+    </div>
+    <div class="atout-card">
+      <div class="atout-icon icon-gold">📅</div>
+      <h3>Horaires étendus</h3>
+      <p>7j/7, souvent de 6h à 22h voire 24h. Chaque heure supplémentaire d'ouverture est du CA additionnel sans coût marginal.</p>
+    </div>
+    <div class="atout-card">
+      <div class="atout-icon icon-blue">🔧</div>
+      <h3>Optimisation possible</h3>
+      <p>Ajustement tarifaire, mix machines, séchoirs, distributeurs — de nombreux leviers permettent d'augmenter le CA sans changer de local.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MODELES -->
+<section class="section" id="modeles" style="background:var(--bg2);max-width:100%;padding:80px 5%;">
+  <div style="max-width:1200px;margin:0 auto;">
+  <div class="section-header">
+    <span class="section-tag">Modes d'entrée</span>
+    <h2>Quel modèle choisir ?</h2>
+    <p>Trois façons d'entrer sur ce marché, selon votre profil et votre niveau de risque accepté.</p>
+  </div>
+  <div class="modeles-grid">
+    <div class="modele-card">
+      <span class="modele-emoji">🏗️</span>
+      <h3>Création from scratch</h3>
+      <p class="tagline">Local vierge, tout à construire</p>
+      <ul class="modele-pros">
+        <li>Liberté totale sur l'aménagement</li>
+        <li>Machines neuves avec garantie</li>
+        <li>Loyer négocié dès le départ</li>
+      </ul>
+      <ul class="modele-pros modele-cons">
+        <li>Délai de 6 à 12 mois avant ouverture</li>
+        <li>Travaux lourds (triphasé, plomberie)</li>
+        <li>Pas de clientèle existante</li>
+      </ul>
+    </div>
+    <div class="modele-card featured">
+      <span class="modele-badge">⭐ Recommandé</span>
+      <span class="modele-emoji">🤝</span>
+      <h3>Rachat de fonds</h3>
+      <p class="tagline">Activité existante, reprise directe</p>
+      <ul class="modele-pros">
+        <li>CA et clientèle dès le jour 1</li>
+        <li>Historique comptable vérifiable</li>
+        <li>Démarrage rapide (< 3 mois)</li>
+        <li>Financement bancaire plus facile</li>
+      </ul>
+      <ul class="modele-pros modele-cons">
+        <li>Prix d'acquisition plus élevé</li>
+        <li>Risque de machines vieillissantes</li>
+      </ul>
+    </div>
+    <div class="modele-card">
+      <span class="modele-emoji">🏷️</span>
+      <h3>Franchise</h3>
+      <p class="tagline">Speed Queen, Wash'n Dry, Clean'n Go</p>
+      <ul class="modele-pros">
+        <li>Accompagnement complet</li>
+        <li>Notoriété et enseigne reconnue</li>
+        <li>Matériel standardisé</li>
+      </ul>
+      <ul class="modele-pros modele-cons">
+        <li>Redevances sur CA (3–6 %)</li>
+        <li>Moins de liberté opérationnelle</li>
+        <li>Droit d'entrée (10–25 k€)</li>
+      </ul>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- SIMULATEUR -->
+<section id="simulateur" style="background:var(--bg);padding:80px 5%;">
+  <div class="sim-inner">
+    <div class="section-header">
+      <span class="section-tag">Outil interactif</span>
+      <h2>Simulez votre investissement</h2>
+      <p>Ajustez les paramètres pour modéliser votre projet en temps réel sur 8 ans.</p>
+    </div>
+    <div class="sim-grid">
+      <!-- PANEL GAUCHE -->
+      <div>
+        <div class="sim-panel">
+          <h3>🏦 Plan de financement</h3>
+          <div class="sim-row">
+            <label>Prix de rachat du fonds <span id="o-prix">50 000 €</span></label>
+            <input type="range" id="s-prix" min="30000" max="150000" step="1000" value="50000">
+          </div>
+          <div class="sim-row">
+            <label>Apport personnel <span id="o-apport">30 %</span></label>
+            <input type="range" id="s-apport" min="10" max="80" step="5" value="30">
+          </div>
+          <div class="sim-row">
+            <label>Taux du prêt pro <span id="o-taux">5,0 %</span></label>
+            <input type="range" id="s-taux" min="3" max="8" step="0.1" value="5">
+          </div>
+          <div class="sim-row">
+            <label>Durée emprunt <span id="o-duree">7 ans</span></label>
+            <input type="range" id="s-duree" min="3" max="10" step="1" value="7">
+          </div>
+          <div class="sim-row">
+            <label>Travaux / remise à niveau <span id="o-travaux">10 000 €</span></label>
+            <input type="range" id="s-travaux" min="0" max="50000" step="1000" value="10000">
+          </div>
+          <div class="sim-divider"></div>
+          <h3>⚙️ Exploitation annuelle</h3>
+          <div class="sim-row">
+            <label>Chiffre d'affaires <span id="o-ca">75 000 €</span></label>
+            <input type="range" id="s-ca" min="40000" max="130000" step="1000" value="75000">
+          </div>
+          <div class="sim-row">
+            <label>Charges (loyer, élec, eau…) <span id="o-charges">35 %</span></label>
+            <input type="range" id="s-charges" min="20" max="55" step="1" value="35">
+          </div>
+        </div>
+      </div>
+
+      <!-- RÉSULTATS DROITE -->
+      <div class="sim-results">
+        <div class="kpi-grid2" id="kpis2"></div>
+
+        <div class="chart-box">
+          <h4>Cash cumulé — années 1 à 8</h4>
+          <div class="chart-wrap">
+            <canvas id="simChart" role="img" aria-label="Évolution du cash cumulé sur 8 ans"></canvas>
+          </div>
+        </div>
+
+        <div class="detail-box">
+          <table>
+            <thead>
+              <tr><th>Année</th><th>EBE</th><th>Annuité prêt</th><th>Cash net</th><th>Cash cumulé</th></tr>
+            </thead>
+            <tbody id="simTbody"></tbody>
+          </table>
+        </div>
+
+        <div class="verdict-box" id="simVerdict"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIÈGES -->
+<section class="section" id="pieges">
+  <div class="section-header">
+    <span class="section-tag">Due diligence</span>
+    <h2>Les pièges à éviter</h2>
+    <p>Les erreurs les plus courantes chez les primo-investisseurs dans ce secteur.</p>
+  </div>
+  <div class="pieges-grid">
+    <div class="piege-card">
+      <div class="piege-num">🏠</div>
+      <div>
+        <h4>Loyer trop élevé</h4>
+        <p>Le loyer ne doit pas dépasser 10–12 % du CA prévisionnel. Au-delà, la marge s'effondre et toute baisse de fréquentation devient critique.</p>
+      </div>
+    </div>
+    <div class="piege-card">
+      <div class="piege-num">🔧</div>
+      <div>
+        <h4>Sous-estimer les travaux</h4>
+        <p>Plomberie, électricité triphasé, évacuations : comptez 30 à 50 k€ supplémentaires dans un local vierge. Toujours faire réaliser des devis avant signature.</p>
+      </div>
+    </div>
+    <div class="piege-card">
+      <div class="piege-num">📋</div>
+      <div>
+        <h4>Fonds surévalué à la vente</h4>
+        <p>Exigez 3 années de bilans comptables. Un fonds se valorise sur un multiple d'EBE réel (3 à 5× EBE), jamais sur un CA gonflé en période de cession.</p>
+      </div>
+    </div>
+    <div class="piege-card">
+      <div class="piege-num">⚡</div>
+      <div>
+        <h4>Charges eau/électricité non maîtrisées</h4>
+        <p>Eau + électricité = 30–40 % des coûts. Machines A+++ obligatoires. Vérifiez les consommations réelles sur les 12 derniers mois avant achat.</p>
+      </div>
+    </div>
+    <div class="piege-card">
+      <div class="piege-num">📡</div>
+      <div>
+        <h4>Pas de monitoring digital</h4>
+        <p>Télépaiement, alertes pannes, compteurs eau/élec connectés sont devenus indispensables. Sans monitoring, vous gérez dans l'angle mort.</p>
+      </div>
+    </div>
+    <div class="piege-card">
+      <div class="piege-num">🗺️</div>
+      <div>
+        <h4>Emplacement mal analysé</h4>
+        <p>Zone dense, logements < 50 m², peu de parkings, population locataire : ces critères valent 80 % du succès. Un mauvais emplacement ne se rattrape pas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ÉTAPES -->
+<section class="section" id="etapes" style="background:var(--bg2);max-width:100%;padding:80px 5%;">
+  <div style="max-width:1200px;margin:0 auto;">
+  <div class="section-header">
+    <span class="section-tag">Méthodologie</span>
+    <h2>Par où commencer ?</h2>
+    <p>Le chemin balisé pour concrétiser votre projet en moins de 6 mois.</p>
+  </div>
+  <div class="etapes-list">
+    <div class="etape">
+      <div class="etape-left"><div class="etape-num">1</div><div class="etape-line"></div></div>
+      <div class="etape-content">
+        <div class="etape-tag">Semaine 1–2</div>
+        <h3>Étude de zone</h3>
+        <p>Repérez 3 à 5 emplacements potentiels. Comptez les logements < 50 m² dans un rayon de 500 m. Analysez la concurrence existante (Google Maps, visites terrain). Ciblez les zones avec une densité piétonne forte et peu de parkings.</p>
+      </div>
+    </div>
+    <div class="etape">
+      <div class="etape-left"><div class="etape-num">2</div><div class="etape-line"></div></div>
+      <div class="etape-content">
+        <div class="etape-tag">Semaine 2–4</div>
+        <h3>Business plan sur 5 ans</h3>
+        <p>Modélisez 3 scénarios (pessimiste / central / optimiste) avec le simulateur ci-dessus. Calculez le seuil de rentabilité et la sensibilité au CA. Vérifiez que votre ratio charges/loyer reste sous 10–12 %.</p>
+      </div>
+    </div>
+    <div class="etape">
+      <div class="etape-left"><div class="etape-num">3</div><div class="etape-line"></div></div>
+      <div class="etape-content">
+        <div class="etape-tag">Semaine 3–6</div>
+        <h3>Due diligence sur le fonds</h3>
+        <p>Demandez 3 ans de bilans, les factures EDF/eau, les contrats de maintenance machines. Faites intervenir un expert-comptable pour vérifier la cohérence du CA. Estimez les travaux de remise à niveau avec un devis artisan.</p>
+      </div>
+    </div>
+    <div class="etape">
+      <div class="etape-left"><div class="etape-num">4</div><div class="etape-line"></div></div>
+      <div class="etape-content">
+        <div class="etape-tag">Semaine 4–8</div>
+        <h3>Contact fournisseurs</h3>
+        <p>Speed Queen, Primus, Electrolux Professional proposent du leasing et accompagnent les porteurs de projet. Demandez des devis comparatifs et renseignez-vous sur les conditions SAV et la durée de garantie.</p>
+      </div>
+    </div>
+    <div class="etape">
+      <div class="etape-left"><div class="etape-num">5</div><div class="etape-line"></div></div>
+      <div class="etape-content">
+        <div class="etape-tag">Semaine 6–12</div>
+        <h3>Montage financier</h3>
+        <p>Apport personnel 20–30 %, prêt professionnel, BPI France possible selon votre profil. Présentez un dossier solide avec business plan, CV entrepreneur et bilan du vendeur. Prévoyez une réserve de trésorerie de 2 mois de charges.</p>
+      </div>
+    </div>
+    <div class="etape">
+      <div class="etape-left"><div class="etape-num">6</div></div>
+      <div class="etape-content">
+        <div class="etape-tag">Mois 3–6</div>
+        <h3>Ouverture & lancement</h3>
+        <p>Installez le monitoring connecté dès le départ (télépaiement, alertes, compteurs). Communiquez localement (flyers, Google Business). Analysez les données de fréquentation les 3 premiers mois pour ajuster vos tarifs.</p>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <h2>Prêt à lancer votre projet ?</h2>
+    <p>Laissez vos coordonnées et recevez une analyse personnalisée de votre opportunité.</p>
+    <div class="contact-form">
+      <div class="form-2col">
+        <div class="form-row"><label>Prénom</label><input type="text" placeholder="Jean"></div>
+        <div class="form-row"><label>Nom</label><input type="text" placeholder="Dupont"></div>
+      </div>
+      <div class="form-row"><label>Email</label><input type="email" placeholder="jean@email.com"></div>
+      <div class="form-row">
+        <label>Budget total disponible</label>
+        <select>
+          <option>Moins de 50 000 €</option>
+          <option selected>50 000 – 100 000 €</option>
+          <option>100 000 – 150 000 €</option>
+          <option>Plus de 150 000 €</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Votre projet</label>
+        <textarea placeholder="Décrivez votre projet : localisation, type de reprise envisagé, questions spécifiques…"></textarea>
+      </div>
+      <button class="btn-submit" onclick="alert('Message envoyé ! Nous revenons vers vous sous 24h.')">Envoyer ma demande →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 LaveriePro · Guide investisseur</p>
+  <a href="#simulateur">Accéder au simulateur</a>
+</footer>
+
+<script>
+const ids2 = ['s-prix','s-apport','s-taux','s-duree','s-travaux','s-ca','s-charges'];
+let simChart2 = null;
+
+function fmt2(n) { return Math.round(n).toLocaleString('fr-FR') + ' €'; }
+
+function pmt2(rate, nper, pv) {
+  if (rate === 0) return pv / nper;
+  return pv * rate * Math.pow(1 + rate, nper) / (Math.pow(1 + rate, nper) - 1);
+}
+
+function runSim() {
+  const prix = +document.getElementById('s-prix').value;
+  const apportPct = +document.getElementById('s-apport').value / 100;
+  const taux = +document.getElementById('s-taux').value / 100;
+  const duree = +document.getElementById('s-duree').value;
+  const travaux = +document.getElementById('s-travaux').value;
+  const ca = +document.getElementById('s-ca').value;
+  const chargesPct = +document.getElementById('s-charges').value / 100;
+
+  document.getElementById('o-prix').textContent = fmt2(prix);
+  document.getElementById('o-apport').textContent = Math.round(+document.getElementById('s-apport').value) + ' %';
+  document.getElementById('o-taux').textContent = (+document.getElementById('s-taux').value).toFixed(1).replace('.',',') + ' %';
+  document.getElementById('o-duree').textContent = duree + ' ans';
+  document.getElementById('o-travaux').textContent = fmt2(travaux);
+  document.getElementById('o-ca').textContent = fmt2(ca);
+  document.getElementById('o-charges').textContent = Math.round(+document.getElementById('s-charges').value) + ' %';
+
+  const investTotal = prix + travaux;
+  const apportEuros = Math.round(investTotal * apportPct);
+  const emprunt = investTotal - apportEuros;
+  const annuite = Math.round(pmt2(taux / 12, duree * 12, emprunt) * 12);
+  const ebe = Math.round(ca * (1 - chargesPct));
+  const cashNet = ebe - annuite;
+  const margeNette = ebe / ca * 100;
+
+  const cashflows = [];
+  let cumul = -apportEuros;
+  for (let y = 1; y <= 8; y++) {
+    const annuiteY = y <= duree ? annuite : 0;
+    const net = ebe - annuiteY;
+    cumul += net;
+    cashflows.push({ y, ebe, annuiteY, net, cumul });
+  }
+
+  const roi = cashflows.findIndex(c => c.cumul >= 0);
+  const roiLabel = roi === -1 ? '> 8 ans' : cashflows[roi].y + ' ans';
+  const roiClass = roi !== -1 && cashflows[roi].y <= 5 ? 'green' : roi !== -1 && cashflows[roi].y <= 7 ? 'gold' : 'red';
+
+  document.getElementById('kpis2').innerHTML = `
+    <div class="kpi2"><div class="kpi2-val">${fmt2(investTotal)}</div><div class="kpi2-label">Invest. total</div></div>
+    <div class="kpi2"><div class="kpi2-val">${fmt2(ebe)}</div><div class="kpi2-label">EBE annuel</div></div>
+    <div class="kpi2"><div class="kpi2-val ${cashNet >= 0 ? 'green' : 'red'}">${fmt2(cashNet)}</div><div class="kpi2-label">Cash net / an</div></div>
+    <div class="kpi2"><div class="kpi2-val ${roiClass}">${roiLabel}</div><div class="kpi2-label">ROI</div></div>
+  `;
+
+  document.getElementById('simTbody').innerHTML = cashflows.map(c => `
+    <tr>
+      <td><strong>An ${c.y}</strong></td>
+      <td>${fmt2(c.ebe)}</td>
+      <td class="${c.annuiteY > 0 ? 'neg' : ''}">${c.annuiteY > 0 ? '− ' + fmt2(c.annuiteY) : '—'}</td>
+      <td class="${c.net >= 0 ? 'pos' : 'neg'}">${fmt2(c.net)}</td>
+      <td class="${c.cumul >= 0 ? 'pos' : 'neg'}">${fmt2(c.cumul)}</td>
+    </tr>
+  `).join('');
+
+  const labels = cashflows.map(c => 'An ' + c.y);
+  const data = cashflows.map(c => Math.round(c.cumul));
+  const colors = data.map(v => v >= 0 ? '#1D9E75' : '#c84b1a');
+
+  if (simChart2) simChart2.destroy();
+  simChart2 = new Chart(document.getElementById('simChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ data, backgroundColor: colors, borderRadius: 4, borderSkipped: false }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + Math.round(ctx.raw).toLocaleString('fr-FR') + ' €' } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 }, callback: v => (v < 0 ? '−' : '') + Math.abs(Math.round(v / 1000)) + 'k€' } }
+      }
+    }
+  });
+
+  let vClass, vIcon, vTitle, vSub;
+  if (cashNet < 0) {
+    vClass = 'bad'; vIcon = '🔴';
+    vTitle = 'Cash-flow négatif — revoir les paramètres';
+    vSub = 'Les annuités dépassent l\'EBE. Envisagez d\'allonger la durée du prêt, d\'augmenter l\'apport ou de revoir le CA prévisionnel.';
+  } else if (roi !== -1 && cashflows[roi].y <= 5) {
+    vClass = 'good'; vIcon = '🟢';
+    vTitle = 'Excellent profil — opération très rentable';
+    vSub = `Retour sur investissement en ${cashflows[roi].y} ans. Cash net de ${fmt2(cashNet)}/an pendant le remboursement, puis free cash-flow total.`;
+  } else if (roi !== -1 && cashflows[roi].y <= 7) {
+    vClass = 'warn'; vIcon = '🟡';
+    vTitle = 'Profil correct — peu de marge de sécurité';
+    vSub = `ROI en ${cashflows[roi].y} ans. Acceptable, mais surveillez l'évolution des charges et du CA. Prévoyez une réserve de 2 mois.`;
+  } else {
+    vClass = 'bad'; vIcon = '🔴';
+    vTitle = 'Retour trop long — négociez ou ajustez';
+    vSub = 'Plus de 8 ans avant de récupérer l\'apport. Renégociez le prix d\'achat ou améliorez les hypothèses d\'exploitation.';
+  }
+  const v = document.getElementById('simVerdict');
+  v.className = 'verdict-box ' + vClass;
+  v.innerHTML = `<div class="verdict-icon">${vIcon}</div><div><div class="verdict-title">${vTitle}</div><div class="verdict-sub">${vSub}</div></div>`;
+}
+
+ids2.forEach(id => document.getElementById(id).addEventListener('input', runSim));
+runSim();
+</script>
+</body>
+</html>
